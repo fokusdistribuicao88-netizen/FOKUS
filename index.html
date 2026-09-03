@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="https://base44.com/logo_v2.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Base44 APP</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // DEV safeguard: if a stale service worker is still active from a previous
+      // session, unregister it and clear all caches BEFORE main.jsx loads, then
+      // reload so chunks are fetched fresh from the Vite dev server.
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+        if (!navigator.serviceWorker.controller) return; // no active SW — nothing to do
+        navigator.serviceWorker.getRegistrations()
+          .then(function (regs) {
+            return Promise.all(regs.map(function (r) { return r.unregister(); }));
+          })
+          .then(function () {
+            if (window.caches) {
+              return caches.keys().then(function (keys) {
+                return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+              });
+            }
+          })
+          .then(function () {
+            window.location.reload();
+          })
+          .catch(function () {});
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
